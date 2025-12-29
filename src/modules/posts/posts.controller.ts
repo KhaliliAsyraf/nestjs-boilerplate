@@ -35,6 +35,8 @@ export class PostsController {
     }
 
     @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Get all posts' })
     @ApiResponse({ status: 200, description: 'Posts retrieved successfully' })
     findAll() {

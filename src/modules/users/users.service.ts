@@ -13,6 +13,10 @@ export class UsersService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+
+        // sample add repository of entity
+        // @InjectRepository(Comment)
+        // private readonly commentRepository: Repository<Comment>,
     ) { }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
