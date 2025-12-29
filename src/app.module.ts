@@ -13,8 +13,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
-import { CommandModule } from './modules/command/command.module';
+// import { CommandModule } from './modules/command/command.module';
 import { typeOrmConfig } from './config/typeorm.config';
+import { AppController } from './app.controller';
+import { MigrationService } from './config/migration.service';
 
 @Module({
     imports: [
@@ -31,26 +33,32 @@ import { typeOrmConfig } from './config/typeorm.config';
             inject: [ConfigService],
         }),
 
-        // Cache with Redis
-        CacheModule.registerAsync({
+        // Cache with Redis - Temporarily using in-memory cache due to compatibility issues
+        CacheModule.register({
             isGlobal: true,
-            imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-                store: redisStore,
-                host: configService.get('REDIS_HOST'),
-                port: configService.get('REDIS_PORT'),
-                ttl: configService.get('REDIS_TTL', 3600),
-            }),
-            inject: [ConfigService],
+            ttl: 3600,
         }),
+        // CacheModule.registerAsync({
+        //     isGlobal: true,
+        //     imports: [ConfigModule],
+        //     useFactory: async (configService: ConfigService) => ({
+        //         store: redisStore as any,
+        //         host: configService.get('REDIS_HOST'),
+        //         port: configService.get('REDIS_PORT'),
+        //         ttl: configService.get('REDIS_TTL', 3600),
+        //     }),
+        //     inject: [ConfigService],
+        // }),
 
         // Rate Limiting
         ThrottlerModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                ttl: configService.get('THROTTLE_TTL', 60),
-                limit: configService.get('THROTTLE_LIMIT', 10),
-            }),
+            useFactory: (configService: ConfigService) => ([
+                {
+                    ttl: configService.get('THROTTLE_TTL', 60000),
+                    limit: configService.get('THROTTLE_LIMIT', 10),
+                },
+            ]),
             inject: [ConfigService],
         }),
 
@@ -96,7 +104,9 @@ import { typeOrmConfig } from './config/typeorm.config';
         UsersModule,
         PostsModule,
         WebsocketModule,
-        CommandModule,
+        // CommandModule, // Temporarily disabled
     ],
+    controllers: [AppController],
+    providers: [MigrationService],
 })
 export class AppModule { }

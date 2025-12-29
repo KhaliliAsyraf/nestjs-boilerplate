@@ -11,11 +11,9 @@ export const typeOrmConfig = (
     username: configService.get('DATABASE_USER'),
     password: configService.get('DATABASE_PASSWORD'),
     database: configService.get('DATABASE_NAME'),
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
-    synchronize: false,
+    autoLoadEntities: true,
+    synchronize: false, // Disabled for safety - use migrations instead
     logging: configService.get('NODE_ENV') === 'development',
-    migrationsRun: false,
 });
 
 // For TypeORM CLI

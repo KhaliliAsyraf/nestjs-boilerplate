@@ -1,9 +1,12 @@
-FROM node:18-alpine
+# Development stage
+FROM node:18-alpine AS development
 
 WORKDIR /usr/src/app
 
-# Install dependencies
+# Copy package files
 COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
 RUN npm install
 
 # Copy source code
@@ -15,5 +18,5 @@ RUN npm run build
 # Expose port
 EXPOSE 3000
 
-# Start the application
+# Start in development mode with hot reload
 CMD ["npm", "run", "start:dev"]
